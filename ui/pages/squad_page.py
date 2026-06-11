@@ -1,6 +1,8 @@
-from PyQt6.QtWidgets import QWidget, QVBoxLayout, QLabel, QTableWidget, QTableWidgetItem, QHeaderView
+from PyQt6.QtWidgets import QWidget, QVBoxLayout, QLabel, QHBoxLayout, QFrame, QTableWidget, QTableWidgetItem, \
+    QHeaderView
 from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QColor
+
 
 class SquadPage(QWidget):
     def __init__(self):
@@ -13,6 +15,39 @@ class SquadPage(QWidget):
         title_label = QLabel("გუნდის მენეჯერი (Squad Overview)")
         title_label.setStyleSheet("font-size: 24px; font-weight: bold; color: #FFFFFF;")
         main_layout.addWidget(title_label)
+
+        cards_layout = QHBoxLayout()
+        cards_layout.setSpacing(20)
+
+        squad_kpi_data = [
+            ("მიმდინარე პოზიცია", "La Liga, 1st", "#2ecc71"),
+            ("სატრანსფერო ბიუჯეტი", "€120,500,000", "#3498db"),
+            ("გუნდის რეიტინგი", "88 OVR", "#9b59b6"),
+            ("კონტრაქტების სტატუსი", "3 იწურება მალე", "#e74c3c")
+        ]
+
+        for title, value, color in squad_kpi_data:
+            card = QFrame()
+            card.setStyleSheet("""
+                QFrame {
+                    background-color: #2A2A2A;
+                    border-radius: 10px;
+                    padding: 15px;
+                }
+            """)
+            card_layout = QVBoxLayout(card)
+
+            c_title = QLabel(title)
+            c_title.setStyleSheet("font-size: 13px; color: #AAAAAA; font-weight: 500;")
+
+            c_value = QLabel(value)
+            c_value.setStyleSheet(f"font-size: 20px; font-weight: bold; color: {color}; margin-top: 5px;")
+
+            card_layout.addWidget(c_title)
+            card_layout.addWidget(c_value)
+            cards_layout.addWidget(card)
+
+        main_layout.addLayout(cards_layout)
 
         self.players_mock_data = [
             {"id": 1, "name": "Marcus Perez", "pos": "FW", "rating": 88, "wage": "€1,250,000", "vfm": "7.5 VFM",
@@ -47,7 +82,7 @@ class SquadPage(QWidget):
                 border-radius: 12px;
                 border: none;
                 gridline-color: transparent;
-                padding: 10px;
+                padding: 15px;
             }
             QTableWidget::item {
                 color: #FFFFFF;
@@ -73,10 +108,10 @@ class SquadPage(QWidget):
         header = self.table.horizontalHeader()
         if header:
             header.setSectionResizeMode(0, QHeaderView.ResizeMode.Stretch)
-            header.setSectionResizeMode(1, QHeaderView.ResizeMode.Interactive)
-            header.setSectionResizeMode(2, QHeaderView.ResizeMode.Interactive)
+            header.setSectionResizeMode(1, QHeaderView.ResizeMode.ResizeToContents)
+            header.setSectionResizeMode(2, QHeaderView.ResizeMode.ResizeToContents)
             header.setSectionResizeMode(3, QHeaderView.ResizeMode.Stretch)
-            header.setSectionResizeMode(4, QHeaderView.ResizeMode.Interactive)
+            header.setSectionResizeMode(4, QHeaderView.ResizeMode.Stretch)
 
         for row_idx, player in enumerate(self.players_mock_data):
             p_name = str(player["name"])
@@ -114,4 +149,5 @@ class SquadPage(QWidget):
         main_layout.addWidget(self.table)
 
         main_layout.setStretch(0, 1)
-        main_layout.setStretch(1, 9)
+        main_layout.setStretch(1, 2)
+        main_layout.setStretch(2, 7)
