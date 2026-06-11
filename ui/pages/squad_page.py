@@ -49,6 +49,9 @@ class SquadPage(QWidget):
 
         main_layout.addLayout(cards_layout)
 
+        content_layout = QHBoxLayout()
+        content_layout.setSpacing(25)
+
         self.players_mock_data = [
             {"id": 1, "name": "Marcus Perez", "pos": "FW", "rating": 88, "wage": "€1,250,000", "vfm": "7.5 VFM",
              "vfm_color": "#2ecc71"},
@@ -82,12 +85,12 @@ class SquadPage(QWidget):
                 border-radius: 12px;
                 border: none;
                 gridline-color: transparent;
-                padding: 15px;
+                padding: 10px;
             }
             QTableWidget::item {
                 color: #FFFFFF;
-                font-size: 14px;
-                padding: 12px;
+                font-size: 13px;
+                padding: 8px;
                 border-bottom: 1px solid #3A3A3A;
             }
             QTableWidget::item:selected {
@@ -97,21 +100,28 @@ class SquadPage(QWidget):
             QHeaderView::section {
                 background-color: #2A2A2A;
                 color: #AAAAAA;
-                font-size: 13px;
+                font-size: 12px;
                 font-weight: bold;
                 border: none;
-                padding: 10px;
+                padding: 8px;
                 border-bottom: 2px solid #444444;
+                text-align: center;
             }
         """)
 
         header = self.table.horizontalHeader()
         if header:
-            header.setSectionResizeMode(0, QHeaderView.ResizeMode.Stretch)
-            header.setSectionResizeMode(1, QHeaderView.ResizeMode.ResizeToContents)
-            header.setSectionResizeMode(2, QHeaderView.ResizeMode.ResizeToContents)
-            header.setSectionResizeMode(3, QHeaderView.ResizeMode.Stretch)
-            header.setSectionResizeMode(4, QHeaderView.ResizeMode.Stretch)
+            header.setSectionResizeMode(0, QHeaderView.ResizeMode.Fixed)
+            header.setSectionResizeMode(1, QHeaderView.ResizeMode.Fixed)
+            header.setSectionResizeMode(2, QHeaderView.ResizeMode.Fixed)
+            header.setSectionResizeMode(3, QHeaderView.ResizeMode.Fixed)
+            header.setSectionResizeMode(4, QHeaderView.ResizeMode.Fixed)
+
+            header.resizeSection(0, 130)
+            header.resizeSection(1, 75)
+            header.resizeSection(2, 75)
+            header.resizeSection(3, 190)
+            header.resizeSection(4, 120)
 
         for row_idx, player in enumerate(self.players_mock_data):
             p_name = str(player["name"])
@@ -130,7 +140,7 @@ class SquadPage(QWidget):
             rating_item.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
 
             wage_item = QTableWidgetItem(p_wage)
-            wage_item.setTextAlignment(Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignVCenter)
+            wage_item.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
 
             vfm_item = QTableWidgetItem(p_vfm)
             vfm_item.setForeground(QColor(p_vfm_color))
@@ -146,7 +156,55 @@ class SquadPage(QWidget):
             self.table.setItem(row_idx, 3, wage_item)
             self.table.setItem(row_idx, 4, vfm_item)
 
-        main_layout.addWidget(self.table)
+        content_layout.addWidget(self.table)
+
+        side_panel = QFrame()
+        side_panel.setStyleSheet("""
+            QFrame {
+                background-color: #2A2A2A;
+                border-radius: 12px;
+                padding: 20px;
+            }
+        """)
+        side_layout = QVBoxLayout(side_panel)
+        side_layout.setSpacing(15)
+
+        schedule_title = QLabel("მატჩების განრიგი (Schedule)")
+        schedule_title.setStyleSheet("font-size: 16px; font-weight: bold; color: #FFFFFF;")
+        side_layout.addWidget(schedule_title)
+
+        matches_mock = [
+            ("28 აგვ, 18:00", "vs Palies", "Barroal Club"),
+            ("30 აგვ, 13:00", "vs Prarwarsi", "Bolnson Iberian")
+        ]
+
+        for m_date, m_opp, m_venue in matches_mock:
+            m_frame = QFrame()
+            m_frame.setStyleSheet("background-color: #333333; border-radius: 8px; padding: 10px;")
+            m_layout = QHBoxLayout(m_frame)
+
+            lbl_date = QLabel(m_date)
+            lbl_date.setStyleSheet("color: #3498db; font-size: 13px; font-weight: bold;")
+
+            lbl_opp = QLabel(m_opp)
+            lbl_opp.setStyleSheet("color: #FFFFFF; font-size: 13px;")
+
+            lbl_venue = QLabel(m_venue)
+            lbl_venue.setStyleSheet("color: #AAAAAA; font-size: 11px;")
+            lbl_venue.setAlignment(Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignVCenter)
+
+            m_layout.addWidget(lbl_date)
+            m_layout.addWidget(lbl_opp)
+            m_layout.addWidget(lbl_venue)
+            side_layout.addWidget(m_frame)
+
+        side_layout.addStretch()
+        content_layout.addWidget(side_panel)
+
+        content_layout.setStretch(0, 65)
+        content_layout.setStretch(1, 35)
+
+        main_layout.addLayout(content_layout)
 
         main_layout.setStretch(0, 1)
         main_layout.setStretch(1, 2)
