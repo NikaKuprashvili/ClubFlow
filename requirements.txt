@@ -1,5 +1,5 @@
 PyQt6>=6.7.0
-SQLAlchemy==2.0.27
+SQLAlchemy==2.0.50
 matplotlib>=3.9.0
-reportlab==4.1.0
-pandas==2.2.1
+reportlab==4.5.1
+pandas==3.0.3

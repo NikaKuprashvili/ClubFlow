@@ -1,4 +1,5 @@
 from PyQt6.QtWidgets import QMainWindow, QWidget, QHBoxLayout, QVBoxLayout, QPushButton, QStackedWidget, QLabel
+from ui.pages.dashboard_page import DashboardPage
 
 
 class MainWindow(QMainWindow):
@@ -28,7 +29,7 @@ class MainWindow(QMainWindow):
 
         self.page_container = QStackedWidget()
 
-        self.page_container.addWidget(QLabel("Dashboard Page Content (Placeholder)"))
+        self.page_container.addWidget(DashboardPage())
         self.page_container.addWidget(QLabel("Squad Manager Content (Placeholder)"))
         self.page_container.addWidget(QLabel("Scouting Market Content (Placeholder)"))
         self.page_container.addWidget(QLabel("Financial Simulator Content (Placeholder)"))
@@ -40,3 +41,24 @@ class MainWindow(QMainWindow):
 
         main_layout.addWidget(sidebar)
         main_layout.addWidget(self.page_container)
+
+        self.setStyleSheet("""
+                    QMainWindow {
+                        background-color: #1E1E1E;
+                    }
+                    QPushButton {
+                        background-color: #2D2D2D;
+                        color: #FFFFFF;
+                        border: none;
+                        border-radius: 5px;
+                        padding: 8px 15px;
+                        font-size: 13px;
+                        text-align: left;
+                    }
+                    QPushButton:hover {
+                        background-color: #3D3D3D;
+                    }
+                    QPushButton:pressed {
+                        background-color: #4D4D4D;
+                    }
+                """)
