@@ -1,6 +1,7 @@
 from PyQt6.QtWidgets import QMainWindow, QWidget, QHBoxLayout, QVBoxLayout, QPushButton, QStackedWidget, QLabel
 from ui.pages.dashboard_page import DashboardPage
 from ui.pages.squad_page import SquadPage
+from ui.pages.scouting_page import ScoutingPage
 
 
 class MainWindow(QMainWindow):
@@ -46,14 +47,17 @@ class MainWindow(QMainWindow):
         self.stacked_widget = QStackedWidget()
         self.dashboard_page = DashboardPage()
         self.squad_page = SquadPage()
+        self.scouting_page = ScoutingPage()
 
         self.stacked_widget.addWidget(self.dashboard_page)
         self.stacked_widget.addWidget(self.squad_page)
+        self.stacked_widget.addWidget(self.scouting_page)
 
         layout.addWidget(self.stacked_widget)
 
         self.btn_dashboard.clicked.connect(lambda: self.change_page(0, self.btn_dashboard))
         self.btn_squad.clicked.connect(lambda: self.change_page(1, self.btn_squad))
+        self.btn_scouting.clicked.connect(lambda: self.change_page(2, self.btn_scouting))
 
         self.setStyleSheet("""
             QMainWindow {
