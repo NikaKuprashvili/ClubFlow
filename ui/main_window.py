@@ -1,6 +1,6 @@
 from PyQt6.QtWidgets import QMainWindow, QWidget, QHBoxLayout, QVBoxLayout, QPushButton, QStackedWidget, QLabel
 from ui.pages.dashboard_page import DashboardPage
-
+from ui.pages.squad_page import SquadPage
 
 class MainWindow(QMainWindow):
     def __init__(self):
@@ -30,7 +30,7 @@ class MainWindow(QMainWindow):
         self.page_container = QStackedWidget()
 
         self.page_container.addWidget(DashboardPage())
-        self.page_container.addWidget(QLabel("Squad Manager Content (Placeholder)"))
+        self.page_container.addWidget(SquadPage())
         self.page_container.addWidget(QLabel("Scouting Market Content (Placeholder)"))
         self.page_container.addWidget(QLabel("Financial Simulator Content (Placeholder)"))
 
