@@ -1,6 +1,6 @@
 import numpy as np
 from PyQt6.QtWidgets import QWidget, QVBoxLayout, QLabel, QHBoxLayout, QFrame, QTableWidget, QTableWidgetItem, \
-    QHeaderView, QComboBox, QPushButton
+    QHeaderView, QComboBox, QPushButton, QProxyStyle, QStyle
 from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QColor
 
@@ -9,6 +9,13 @@ import matplotlib
 matplotlib.use('Qt5Agg')
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.figure import Figure
+
+
+class CleanPopupStyle(QProxyStyle):
+    def styleHint(self, hint: QStyle.StyleHint, *args, **kwargs):
+        if hint == QStyle.StyleHint.SH_ComboBox_Popup:
+            return 0
+        return super().styleHint(hint, *args, **kwargs)
 
 
 class ScoutingPage(QWidget):
@@ -51,7 +58,11 @@ class ScoutingPage(QWidget):
             "color: #8F9CAE; font-size: 13px; font-weight: 700; text-transform: uppercase; border: none;")
 
         self.player_selector = QComboBox()
+        self.combo_style = CleanPopupStyle()
+        self.player_selector.setStyle(self.combo_style)
+
         self.player_selector.addItems(["Kylian Mbappé", "Erling Haaland", "Kevin De Bruyne", "Jude Bellingham"])
+
         self.player_selector.setStyleSheet("""
             QComboBox {
                 background-color: #1C2127;
@@ -69,6 +80,8 @@ class ScoutingPage(QWidget):
                 color: #FFFFFF;
                 selection-background-color: #2D3540;
                 border: 1px solid #2D3540;
+                padding: 4px;
+                show-decoration-selected: 1;
             }
         """)
 
@@ -115,29 +128,92 @@ class ScoutingPage(QWidget):
         self.table.setEditTriggers(QTableWidget.EditTrigger.NoEditTriggers)
         self.table.setSelectionBehavior(QTableWidget.SelectionBehavior.SelectRows)
         self.table.setShowGrid(False)
+        self.table.setCornerButtonEnabled(False)
+        self.table.setMinimumWidth(460)
 
         v_header = self.table.verticalHeader()
         if v_header:
             v_header.setVisible(False)
 
         self.table.setStyleSheet("""
-            QTableWidget { background: transparent; border: none; } 
-            QTableWidget::item { color: #FFFFFF; font-size: 12px; border-bottom: 1px solid #2D3540; padding: 12px 10px; } 
-            QTableWidget::item:selected { background-color: #2D3540; color: #FFFFFF; }
-            QHeaderView::section { background: transparent; color: #8F9CAE; font-size: 11px; font-weight: 700; border: none; border-bottom: 2px solid #2D3540; padding-bottom: 5px; }
+            QTableWidget { 
+                background: transparent; 
+                border: none; 
+            } 
+            QTableWidget::item { 
+                color: #FFFFFF; 
+                font-size: 12px; 
+                border-bottom: 1px solid #2D3540; 
+                padding: 12px 10px; 
+            } 
+            QTableWidget::item:selected { 
+                background-color: #1C2127; 
+                color: #FFFFFF; 
+            }
+            QHeaderView { 
+                background: transparent; 
+            }
+            QHeaderView::section { 
+                background: transparent; 
+                color: #8F9CAE; 
+                font-size: 11px; 
+                font-weight: 700; 
+                border: none; 
+                border-bottom: 2px solid #2D3540; 
+                padding-top: 5px;
+                padding-bottom: 8px;
+                padding-left: 10px;
+                padding-right: 10px;
+            }
+            QTableWidget QTableCornerButton::section { 
+                background: transparent; 
+                border: none; 
+            }
+            QScrollBar:horizontal {
+                border: none;
+                background-color: #1C2127;
+                height: 8px;
+                margin: 0px;
+                border-radius: 4px;
+            }
+            QScrollBar::handle:horizontal {
+                background-color: #4E5D6C;
+                min-width: 30px;
+                border-radius: 4px;
+            }
+            QScrollBar::handle:horizontal:hover {
+                background-color: #3498db;
+            }
+            QScrollBar::add-line:horizontal, QScrollBar::sub-line:horizontal {
+                border: none;
+                background: none;
+            }
         """)
 
         header = self.table.horizontalHeader()
-        if header:
-            header.setSectionResizeMode(0, QHeaderView.ResizeMode.Interactive)
-            header.setSectionResizeMode(1, QHeaderView.ResizeMode.Interactive)
-            header.setSectionResizeMode(2, QHeaderView.ResizeMode.Interactive)
-            header.setSectionResizeMode(3, QHeaderView.ResizeMode.Interactive)
-            header.setSectionResizeMode(4, QHeaderView.ResizeMode.Stretch)
-            header.resizeSection(0, 135)
-            header.resizeSection(1, 45)
+        if header is not None:
+            header.setSectionResizeMode(QHeaderView.ResizeMode.Interactive)
+            header.setStretchLastSection(True)
+
+            header.resizeSection(0, 150)
+            header.resizeSection(1, 55)
             header.resizeSection(2, 95)
             header.resizeSection(3, 95)
+            header.resizeSection(4, 90)
+
+            header.setDefaultAlignment(Qt.AlignmentFlag.AlignCenter)
+
+            assert header is not None
+            header_model = header.model()
+
+            if header_model is not None:
+                assert header_model is not None
+                header_model.setHeaderData(
+                    0,
+                    Qt.Orientation.Horizontal,
+                    Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignVCenter,
+                    Qt.ItemDataRole.TextAlignmentRole
+                )
 
         table_layout.addWidget(self.table)
         content_layout.addWidget(table_frame, stretch=56)
@@ -243,7 +319,7 @@ class ScoutingPage(QWidget):
         }
         target_stats = list(target_profiles[target])
 
-        categories = ['Pace/Att', 'Finishing', 'Passing', 'Dribbling', 'Defending', 'Physical']
+        categories = ['Pace', 'Finishing', 'Passing', 'Dribbling', 'Defending', 'Physical']
         n_categories = len(categories)
 
         angles = [n / float(n_categories) * 2 * np.pi for n in range(n_categories)]

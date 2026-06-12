@@ -1,4 +1,7 @@
-from PyQt6.QtWidgets import QMainWindow, QWidget, QHBoxLayout, QVBoxLayout, QPushButton, QStackedWidget, QLabel
+from PyQt6.QtWidgets import (
+    QMainWindow, QWidget, QHBoxLayout, QVBoxLayout,
+    QPushButton, QStackedWidget, QLabel
+)
 from ui.pages.dashboard_page import DashboardPage
 from ui.pages.squad_page import SquadPage
 from ui.pages.scouting_page import ScoutingPage
@@ -9,7 +12,7 @@ class MainWindow(QMainWindow):
         super().__init__()
 
         self.setWindowTitle("ClubFlow - Advanced Football Analytics")
-        self.resize(1200, 750)
+        self.resize(1240, 800)
 
         main_widget = QWidget()
         self.setCentralWidget(main_widget)
@@ -20,14 +23,19 @@ class MainWindow(QMainWindow):
 
         sidebar = QWidget()
         sidebar.setObjectName("sidebar")
-        sidebar.setFixedWidth(220)
+        sidebar.setFixedWidth(240)
         sidebar_layout = QVBoxLayout(sidebar)
-        sidebar_layout.setContentsMargins(15, 25, 15, 25)
-        sidebar_layout.setSpacing(8)
+        sidebar_layout.setContentsMargins(20, 30, 20, 30)
+        sidebar_layout.setSpacing(10)
 
         logo_lbl = QLabel("⚡ ClubFlow")
-        logo_lbl.setStyleSheet(
-            "color: #FFFFFF; font-size: 20px; font-weight: 800; padding-left: 10px; margin-bottom: 20px;")
+        logo_lbl.setStyleSheet("""
+            color: #FFFFFF; 
+            font-size: 22px; 
+            font-weight: 800; 
+            padding-left: 10px; 
+            margin-bottom: 25px;
+        """)
         sidebar_layout.addWidget(logo_lbl)
 
         self.btn_dashboard = QPushButton("  📊  Dashboard")
@@ -35,16 +43,21 @@ class MainWindow(QMainWindow):
         self.btn_scouting = QPushButton("  🔍  Scouting Market")
         self.btn_finance = QPushButton("  💼  Financial Simulator")
 
-        self.menu_buttons = [self.btn_dashboard, self.btn_squad, self.btn_scouting, self.btn_finance]
+        self.menu_buttons = [
+            self.btn_dashboard,
+            self.btn_squad,
+            self.btn_scouting,
+            self.btn_finance
+        ]
 
         for btn in self.menu_buttons:
             sidebar_layout.addWidget(btn)
 
         sidebar_layout.addStretch()
-
         layout.addWidget(sidebar)
 
         self.stacked_widget = QStackedWidget()
+
         self.dashboard_page = DashboardPage()
         self.squad_page = SquadPage()
         self.scouting_page = ScoutingPage()
@@ -58,6 +71,7 @@ class MainWindow(QMainWindow):
         self.btn_dashboard.clicked.connect(lambda: self.change_page(0, self.btn_dashboard))
         self.btn_squad.clicked.connect(lambda: self.change_page(1, self.btn_squad))
         self.btn_scouting.clicked.connect(lambda: self.change_page(2, self.btn_scouting))
+        self.btn_finance.clicked.connect(lambda: self.change_page(3, self.btn_finance))
 
         self.setStyleSheet("""
             QMainWindow {
@@ -71,10 +85,10 @@ class MainWindow(QMainWindow):
                 background-color: transparent;
                 color: #8F9CAE;
                 border: none;
-                border-radius: 6px;
-                padding: 12px 15px;
+                border-radius: 8px;
+                padding: 14px 18px;
                 font-size: 13px;
-                font-weight: bold;
+                font-weight: 600;
                 text-align: left;
             }
             QPushButton:hover {
@@ -84,7 +98,7 @@ class MainWindow(QMainWindow):
             QPushButton[active="true"] {
                 background-color: #242A32;
                 color: #FFFFFF;
-                border-left: 3px solid #3498db;
+                border-left: 4px solid #3498db;
                 border-top-left-radius: 0px;
                 border-bottom-left-radius: 0px;
             }
@@ -102,8 +116,6 @@ class MainWindow(QMainWindow):
 
         current_style = self.style()
         if current_style is not None:
-            current_style.unpolish(clicked_button)
-            current_style.polish(clicked_button)
             for btn in self.menu_buttons:
                 current_style.unpolish(btn)
                 current_style.polish(btn)
