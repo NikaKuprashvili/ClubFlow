@@ -1,12 +1,12 @@
 import numpy as np
 from PyQt6.QtWidgets import QWidget, QVBoxLayout, QLabel, QHBoxLayout, QFrame, QTableWidget, QTableWidgetItem, \
     QHeaderView, QComboBox, QPushButton, QProxyStyle, QStyle
-from PyQt6.QtCore import Qt
+from PyQt6.QtCore import Qt, pyqtSignal
 from PyQt6.QtGui import QColor
 
 import matplotlib
 
-matplotlib.use('Qt5Agg')
+matplotlib.use('QtAgg')
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.figure import Figure
 
@@ -19,6 +19,8 @@ class CleanPopupStyle(QProxyStyle):
 
 
 class ScoutingPage(QWidget):
+    player_selected_for_finance = pyqtSignal(dict)
+
     def __init__(self):
         super().__init__()
 
@@ -215,7 +217,28 @@ class ScoutingPage(QWidget):
                     Qt.ItemDataRole.TextAlignmentRole
                 )
 
+        self.send_to_finance_btn = QPushButton("💼 Send to Financial Simulator")
+        self.send_to_finance_btn.setStyleSheet("""
+            QPushButton {
+                background-color: #2D3540;
+                color: #FFFFFF;
+                font-weight: 700;
+                font-size: 11px;
+                text-transform: uppercase;
+                border: 1px solid #4E5D6C;
+                border-radius: 6px;
+                padding: 8px;
+                margin-top: 5px;
+            }
+            QPushButton:hover {
+                background-color: #e67e22;
+                border: 1px solid #e67e22;
+            }
+        """)
+        self.send_to_finance_btn.clicked.connect(self.emit_player_data)
+
         table_layout.addWidget(self.table)
+        table_layout.addWidget(self.send_to_finance_btn)
         content_layout.addWidget(table_frame, stretch=56)
 
         radar_frame = QFrame()
@@ -359,3 +382,28 @@ class ScoutingPage(QWidget):
 
         self.fig.tight_layout()
         self.canvas.draw()
+
+    def emit_player_data(self):
+        selected_row = self.table.currentRow()
+        if selected_row < 0:
+            return
+
+        target = self.player_selector.currentText()
+        alternatives = self.mock_database[target]
+        chosen_player = alternatives[selected_row]
+
+        raw_name = chosen_player[0]
+        raw_fee = chosen_player[2].replace("€", "").replace("M", "")
+        fee_value = int(float(raw_fee))
+
+        raw_wage = chosen_player[3].replace("€", "").replace("K/wk", "")
+        wage_value = int(float(raw_wage))
+
+        player_data_packet = {
+            "name": raw_name,
+            "fee": fee_value,
+            "wage": wage_value,
+            "contract": 5
+        }
+
+        self.player_selected_for_finance.emit(player_data_packet)

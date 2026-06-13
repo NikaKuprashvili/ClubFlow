@@ -5,6 +5,7 @@ from PyQt6.QtWidgets import (
 from ui.pages.dashboard_page import DashboardPage
 from ui.pages.squad_page import SquadPage
 from ui.pages.scouting_page import ScoutingPage
+from ui.pages.finance_page import FinancialSimulatorPage
 
 
 class MainWindow(QMainWindow):
@@ -61,12 +62,16 @@ class MainWindow(QMainWindow):
         self.dashboard_page = DashboardPage()
         self.squad_page = SquadPage()
         self.scouting_page = ScoutingPage()
+        self.finance_page = FinancialSimulatorPage()
 
         self.stacked_widget.addWidget(self.dashboard_page)
         self.stacked_widget.addWidget(self.squad_page)
         self.stacked_widget.addWidget(self.scouting_page)
+        self.stacked_widget.addWidget(self.finance_page)
 
         layout.addWidget(self.stacked_widget)
+
+        self.scouting_page.player_selected_for_finance.connect(self.handle_scouting_to_finance)
 
         self.btn_dashboard.clicked.connect(lambda: self.change_page(0, self.btn_dashboard))
         self.btn_squad.clicked.connect(lambda: self.change_page(1, self.btn_squad))
@@ -119,3 +124,7 @@ class MainWindow(QMainWindow):
             for btn in self.menu_buttons:
                 current_style.unpolish(btn)
                 current_style.polish(btn)
+
+    def handle_scouting_to_finance(self, player_data: dict):
+        self.finance_page.load_player_from_scouting(player_data)
+        self.change_page(3, self.btn_finance)
